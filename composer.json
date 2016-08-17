@@ -33,8 +33,5 @@
         "psr-4": {
             "RCorpWechat\\": "src/"
         }
-        // "files": [
-        //     "src/Payment/helpers.php"
-        // ]
     }
 }
