@@ -19,7 +19,6 @@ class Material extends AbstractAPI
     const API_MPNEWS_UPDATE = 'https://qyapi.weixin.qq.com/cgi-bin/material/update_mpnews';
     const API_NEWS_IMAGE_UPLOAD = 'https://qyapi.weixin.qq.com/cgi-bin/media/uploadimg';
 
-
     public function uploadImage($path, $agentId = 0)
     {
         $params = [
