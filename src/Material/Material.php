@@ -148,6 +148,25 @@ class Material extends AbstractAPI
 
     protected function uploadMedia($type, $path, array $params)
     {
-        
+        if (!file_exists($path) || !is_readable($path)) {
+            throw new InvalidArgumentException("File does not exist, or the file is unreadable: '$path'");
+        }
+
+        $params['type'] = $type;
+
+        return $this->parseJSON('upload', [self::getAPIByType($type), ['media' => $path], $params]);
+    }
+
+    public function getAPIByType($type)
+    {
+        switch ($type) {
+            case 'news_image' :
+                $api = self::API_NEWS_IMAGE_UPLOAD;
+                break;
+            default :
+                $api = self::API_UPLOAD;
+        }
+
+        return $api;
     }
 }
