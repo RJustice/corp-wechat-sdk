@@ -18,11 +18,11 @@
  * @link      https://github.com/overtrue
  * @link      http://overtrue.me
  */
-namespace EasyWeChat\Encryption;
+namespace RCorpWechat\Encryption;
 
-use EasyWeChat\Core\Exceptions\InvalidConfigException;
-use EasyWeChat\Core\Exceptions\RuntimeException;
-use EasyWeChat\Support\XML;
+use RCorpWechat\Core\Exceptions\InvalidConfigException;
+use RCorpWechat\Core\Exceptions\RuntimeException;
+use RCorpWechat\Support\XML;
 use Exception as BaseException;
 
 /**

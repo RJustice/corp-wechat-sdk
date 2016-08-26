@@ -18,9 +18,9 @@
  * @link      https://github.com/overtrue
  * @link      http://overtrue.me
  */
-namespace EasyWeChat\Encryption;
+namespace RCorpWechat\Encryption;
 
-use EasyWeChat\Core\Exception as CoreException;
+use RCorpWechat\Core\Exception as CoreException;
 
 /**
  * Class EncryptionException.
