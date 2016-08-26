@@ -72,7 +72,7 @@ class Http
 
     public function getClient()
     {
-        if (!(this->client instanceof HttpClient)) {
+        if (!($this->client instanceof HttpClient)) {
             $this->client = new HttpClient();
         }
 

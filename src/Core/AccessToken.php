@@ -89,7 +89,7 @@ class AccessToken
     public function getTokenFromServer()
     {
         $params = [
-            'corpid' => $this-<corpid,
+            'corpid' => $this->corpid,
             'corpsecret' => $this->corpsecret,
         ];
 
