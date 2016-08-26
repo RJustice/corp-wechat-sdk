@@ -66,7 +66,7 @@ abstract class AbstrackAPI
 
         $this->checkAndThrow($contents);
 
-        return new Collection($content);
+        return new Collection($contents);
     }
 
     public function registerHttpMiddlewares()
@@ -108,7 +108,7 @@ abstract class AbstrackAPI
 
     protected function retryMiddleware()
     {
-        return Middleware::retry(function ($retries, RequestInterface $request, ResponseInterface $response = null)) {
+        return Middleware::retry(function ($retries, RequestInterface $request, ResponseInterface $response = null) {
             if ($retries <= 2 && $response && $body = $request->getBody()) {
                 if (stripos($body, 'errcode') && (stripos($body, '40001')) && (stripos($body, '41001'))) {
                     $field = $this->accessToken->getQueryName();
@@ -134,7 +134,7 @@ abstract class AbstrackAPI
                 $contents['errmsg'] = 'Unknow';
             }
 
-            throw new HttPException($content['errmsg'], $contents['errcode']);
+            throw new HttPException($contents['errmsg'], $contents['errcode']);
         }
     }
 }
