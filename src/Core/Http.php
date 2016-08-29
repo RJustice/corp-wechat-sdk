@@ -5,7 +5,7 @@ namespace RCorpWechat\Core;
 use RCorpWechat\Core\Exceptions\HttpException;
 use RCorpWechat\Support\Log;
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\HandleStack;
+use GuzzleHttp\HandlerStack;
 use Psr\Http\Message\ResponseInterface;
 
 class Http 
@@ -86,7 +86,7 @@ class Http
         return $this;
     }
 
-    public function getMiddleware()
+    public function getMiddlewares()
     {
         return $this->middlewares;
     }

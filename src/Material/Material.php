@@ -3,7 +3,7 @@
 namespace RCorpWechat\Material;
 
 use RCorpWechat\Core\AbstractAPI;
-use RCorpWechat\Core\Exception\InvalidArgumentException;
+use RCorpWechat\Core\Exceptions\InvalidArgumentException;
 use RCorpWechat\Message\Article;
 
 class Material extends AbstractAPI
@@ -79,27 +79,31 @@ class Material extends AbstractAPI
             return $this->parseJSON('json', [self::API_MPNEWS_UPLOAD, $params]);
     }
 
-    public function updateArticle($mediaId, $article, $agentId = 0)
-    {
+    public function updateArticle($articles, $agentId = 0) {
+        if (!empty($articles['title']) || $articles instanceof Article) {
+            $articles = [$articles];
+        }
+
         $params = [
-            'media_id' => $mediaId,
             'agentid' => $agentId,
             'mpnews' => [
                 'articles' => array_map(function ($article) {
                     if ($article instanceof Article) {
                         return $article->only([
-                                'title', 'thumb_media_id', 'author', 'content_source_url', 'content', 'digest', 'show_cover_pic'
-                            ]);
+                            'title', 'thumb_media_id', 'author', 'content_source_url', 'content', 'digest', 'show_cover_pic'
+                        ]);
                     }
 
+                    return $article;
                 }, $articles),
             ]
         ];
+        return $this->parseJSON('json', [self::API_MPNEWS_UPDATE, $params]);
     }
 
     public function uploadArticleImage($path)
     {
-        return $this->uploadMedia('news_image', $path);
+        return $this->uploadMedia('news_image', $path, []);
     }
 
     public function get($mediaId)

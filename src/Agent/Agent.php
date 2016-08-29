@@ -4,7 +4,7 @@ namespace RCorpWechat\Agent;
 
 use RCorpWechat\Core\AbstractAPI;
 
-class Agent extend AbstractAPI
+class Agent extends AbstractAPI
 {
     const API_GET = 'https://qyapi.weixin.qq.com/cgi-bin/agent/get';
     const API_SET = 'https://qyapi.weixin.qq.com/cgi-bin/agent/set';

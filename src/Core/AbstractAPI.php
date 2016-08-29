@@ -2,7 +2,7 @@
 
 namespace RCorpWechat\Core;
 
-use RCorpWechat\Core\Exceptions\HttPException;
+use RCorpWechat\Core\Exceptions\HttpException;
 use RCorpWechat\Support\Collection;
 use RCorpWechat\Support\Log;
 use GuzzleHttp\Middleware;
@@ -11,7 +11,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 
-abstract class AbstrackAPI
+abstract class AbstractAPI
 {
     protected $http;
 
@@ -62,7 +62,7 @@ abstract class AbstrackAPI
     {
         $http = $this->getHttp();
 
-        $contents = $this->parseJSON(call_user_func_array([$http, $method], $args));
+        $contents = $http->parseJSON(call_user_func_array([$http, $method], $args));
 
         $this->checkAndThrow($contents);
 
