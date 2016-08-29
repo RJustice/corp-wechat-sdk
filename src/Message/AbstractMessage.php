@@ -19,6 +19,7 @@ abstract class AbstractMessage extends Attribute
     protected $totag;
     protected $agentid;
     protected $from;
+    protected $safe;
     protected $properties = [];
 
     public function getType() {
