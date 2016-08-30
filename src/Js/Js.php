@@ -19,8 +19,10 @@ class Js extends AbstractAPI
     protected $cache;
     protected $url;
 
-    const  TICKET_CACHE_PREFIX = 'rcorpwechat.jsapi_ticker.';
+    const TICKET_CACHE_PREFIX = 'rcorpwechat.jsapi_ticket.';
     const API_TICKET = 'https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket';
+    const GROUP_TICKET_CACHE_PREFIX = 'rcorpwechat.group.jsapi_ticket';
+    const GROUP_API_TICKET = 'https://qyapi.weixin.qq.com/cgi-bin/ticket/get';
 
     public function config(array $APIs, $debug = false, $beta = false, $json = true) {
         $signPackage = $this->signature();
@@ -31,6 +33,19 @@ class Js extends AbstractAPI
         ];
 
         $config = array_merge($base, $signPackage, ['jsAPIList' => $APIs]);
+
+        return $json ? json_encode($config) : $config;
+    }
+
+    public function contactConfig(array $APIs, $debug = false, $beta = false, $json = true) {
+        $signPackage = $this->groupSignature();
+
+        $base = [
+            'debug' => $debug,
+            'beta' => $beta,
+        ];
+
+        $config = array_merge($base, $signPackage, ['jsaAPIList' => $APIs]);
 
         return $json ? json_encode($config) : $config;
     }
@@ -53,6 +68,38 @@ class Js extends AbstractAPI
         return $result['ticket'];
     }
 
+    public function groupTicket() {
+        $ticketKey = self::GROUP_TICKET_CACHE_PREFIX . $this->getAccessToken()->getCorpId();
+        $groupKey = self::GROUP_TICKET_CACHE_PREFIX . $this->getAccessToken()->getCorpId() . '.group_id';
+
+        if ($ticket = $this->getCache()->fetch($ticketKey)) {
+            return $ticket;
+        }
+
+        $result = $this->parseJSON('get', [self::GROUP_API_TICKET, ['type' => 'contact']]);
+
+        $this->getCache()->save($ticketKey, $result['ticket'], $result['expires_in'] - 500);
+        $this->getCache()->save($groupKey, $result['group_id'], $result['expires_in'] - 500);
+
+        return $result['ticket'];
+    }
+
+    public function groupId() {
+        $groupKey = self::GROUP_TICKET_CACHE_PREFIX . $this->getAccessToken()->getCorpId() . '.group_id';
+        $ticketKey = self::GROUP_TICKET_CACHE_PREFIX . $this->getAccessToken()->getCorpId();
+
+        if ($groupId = $this->getCache()->fetch($groupKey)) {
+            return $groupId;
+        }
+
+        $result = $this->parseJSON('get', [self::GROUP_API_TICKET, ['type' => 'contact']]);
+
+        $this->getCache()->save($groupKey, $result['group_id'], $result['expires_in'] - 500);
+        $this->getCache()->save($ticketKey, $result['ticket'], $result['expires_in'] - 500);
+
+        return $result['group_id'];
+    }
+
     public function signature($url = null, $nonce = null, $timestamp = null) {
         $url = $url ? $url : $this->getUrl();
         $nonce = $nonce ? $nonce : Str::quickRandom(10);
@@ -70,8 +117,29 @@ class Js extends AbstractAPI
         return $sign;
     }
 
+    public function groupSignature($url = null, $nonce = null, $timestamp = null) {
+        $url = $url ? $url : $this->getUrl();
+        $nonce = $nonce ? $nonce : Str::quickRandom(10);
+        $timestamp = $timestamp ? $timestamp : time();
+        $ticket = $this->groupTicket();
+
+        $sign = [
+            'corpId' => $this->getAccessToken()->getCorpId(),
+            'nonceStr' => $nonce,
+            'timestamp' => $timestamp,
+            'url' => $url,
+            'signature' => $this->getGroupSignature($ticket, $nonce, $timestamp, $url),
+        ];
+
+        return $sign;
+    }
+
     public function getSignature($ticket, $nonce, $timestamp, $url) {
         return sha1("jsapi_ticket={$ticket}&noncestr={$nonce}&timestamp={$timestamp}&url={$url}");
+    }
+
+    public function getGroupSignature($ticket, $nonce, $timestamp, $url) {
+        return sha1("group_ticket={$ticket}&noncestr={$nonce}&timestamp={$timestamp}&url={$url}");
     }
 
     public function setUrl($url) {
@@ -95,6 +163,6 @@ class Js extends AbstractAPI
     }
 
     public function getCache() {
-        return $this->cache ? : $this->cache = new FilesystemCache(sys_get_temp_dir());
+        return $this->cache ?: $this->cache = new FilesystemCache(sys_get_temp_dir());
     }
 }

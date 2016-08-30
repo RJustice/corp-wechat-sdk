@@ -19,8 +19,7 @@ class Material extends AbstractAPI
     const API_MPNEWS_UPDATE = 'https://qyapi.weixin.qq.com/cgi-bin/material/update_mpnews';
     const API_NEWS_IMAGE_UPLOAD = 'https://qyapi.weixin.qq.com/cgi-bin/media/uploadimg';
 
-    public function uploadImage($path, $agentId = 0)
-    {
+    public function uploadImage($path, $agentId = 0) {
         $params = [
             'agentid' => $agentId,
         ];
@@ -28,8 +27,7 @@ class Material extends AbstractAPI
         return $this->uploadMedia('image', $path, $params);
     }
 
-    public function uploadVoice($path, $agentId = 0)
-    {
+    public function uploadVoice($path, $agentId = 0) {
         $params = [
             'agentid' => $agentId,
         ];
@@ -37,8 +35,7 @@ class Material extends AbstractAPI
         return $this->uploadMedia('voice', $path, $params);
     }
 
-    public function uploadFile($path, $agentId = 0)
-    {
+    public function uploadFile($path, $agentId = 0) {
         $params = [
             'agentid' => $agentId,
         ];
@@ -46,8 +43,7 @@ class Material extends AbstractAPI
         return $this->uploadMedia('file', $path, $params);
     }
 
-    public function uploadVideo($path, $agentId = 0)
-    {
+    public function uploadVideo($path, $agentId = 0) {
         $params = [
             'agentid' => $agentId,
         ];
@@ -55,8 +51,7 @@ class Material extends AbstractAPI
         return $this->uploadMedia('video', $path, $params);
     }
 
-    public function uploadArticle($articles, $agentId = 0)
-    {
+    public function uploadArticle($articles, $agentId = 0) {
         if (!empty($articles['title']) || $articles instanceof Article) {
             $articles = [$articles];
         }
@@ -67,16 +62,16 @@ class Material extends AbstractAPI
                 'articles' => array_map(function ($article) {
                     if ($article instanceof Article) {
                         return $article->only([
-                                'title', 'thumb_media_id', 'author', 'content_source_url', 'content', 'digest', 'show_cover_pic'
-                            ]);
+                            'title', 'thumb_media_id', 'author', 'content_source_url', 'content', 'digest', 'show_cover_pic'
+                        ]);
                     }
 
                     return $article;
-                    }, $articles),
-                ]
-            ];
+                }, $articles),
+            ]
+        ];
 
-            return $this->parseJSON('json', [self::API_MPNEWS_UPLOAD, $params]);
+        return $this->parseJSON('json', [self::API_MPNEWS_UPLOAD, $params]);
     }
 
     public function updateArticle($articles, $agentId = 0) {
@@ -101,13 +96,15 @@ class Material extends AbstractAPI
         return $this->parseJSON('json', [self::API_MPNEWS_UPDATE, $params]);
     }
 
-    public function uploadArticleImage($path)
-    {
+    public function uploadArticleImage($path) {
         return $this->uploadMedia('news_image', $path, []);
     }
 
-    public function get($mediaId)
-    {
+    public function uploadCardLogo($path) {
+        return $this->uploadMedia('card_logo', $path, ['type' => 'card_logo']);
+    }
+
+    public function get($mediaId) {
         $response = $this->getHttp()->json(self::API_GET, ['media_id' => $mediaId]);
 
         foreach ($response->getHeader('Content-Type') as $mine) {
@@ -127,13 +124,11 @@ class Material extends AbstractAPI
         return $json;
     }
 
-    public function delete($mediaId)
-    {
+    public function delete($mediaId) {
         return $this->parseJSON('json', [self::API_DELETE, 'media_id' => $mediaId]);
     }
 
-    public function lists($type, $agentId = 0, $offset = 0, $count = 20)
-    {
+    public function lists($type, $agentId = 0, $offset = 0, $count = 20) {
         $params = [
             'type' => $type,
             'agentid' => $agentId,
@@ -144,13 +139,11 @@ class Material extends AbstractAPI
         return $this->parseJSON('json', [self::API_LISTS, $params]);
     }
 
-    public function stats()
-    {
+    public function stats() {
         return $this->parseJSON('get', [self::API_STATS]);
     }
 
-    protected function uploadMedia($type, $path, array $params)
-    {
+    protected function uploadMedia($type, $path, array $params) {
         if (!file_exists($path) || !is_readable($path)) {
             throw new InvalidArgumentException("File does not exist, or the file is unreadable: '$path'");
         }
@@ -160,10 +153,11 @@ class Material extends AbstractAPI
         return $this->parseJSON('upload', [self::getAPIByType($type), ['media' => $path], $params]);
     }
 
-    public function getAPIByType($type)
-    {
+    public function getAPIByType($type) {
         switch ($type) {
             case 'news_image' :
+
+            case 'card_logo' :
                 $api = self::API_NEWS_IMAGE_UPLOAD;
                 break;
             default :
