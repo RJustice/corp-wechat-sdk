@@ -134,7 +134,7 @@ abstract class AbstractAPI
                 $contents['errmsg'] = 'Unknow';
             }
 
-            throw new HttPException($contents['errmsg'], $contents['errcode']);
+            throw new HttpException($contents['errmsg'], $contents['errcode']);
         }
     }
 }

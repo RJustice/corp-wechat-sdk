@@ -8,7 +8,7 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\HandlerStack;
 use Psr\Http\Message\ResponseInterface;
 
-class Http 
+class Http
 {
     protected $client;
 
@@ -16,37 +16,31 @@ class Http
 
     protected static $defaults = [];
 
-    public static function setDefaultOptions($defaults = [])
-    {
+    public static function setDefaultOptions($defaults = []) {
         self::$defaults = $defaults;
     }
 
-    public static function getDefaultOptions()
-    {
+    public static function getDefaultOptions() {
         return self::$defaults;
     }
 
-    public function get($url, $options = [])
-    {
+    public function get($url, $options = []) {
         return $this->request($url, 'GET', ['query' => $options]);
     }
 
-    public function post($url, $options = [])
-    {
+    public function post($url, $options = []) {
         $key = is_array($options) ? 'form_params' : 'body';
 
         return $this->request($url, 'POST', [$key => $options]);
     }
 
-    public function json($url, $options = [], $encodeOption = JSON_UNESCAPED_UNICODE)
-    {
+    public function json($url, $options = [], $encodeOption = JSON_UNESCAPED_UNICODE) {
         is_array($options) && $options = json_encode($options, $encodeOption);
 
         return $this->request($url, 'POST', ['body' => $options, 'headers' => ['content-type' => 'application/json']]);
     }
 
-    public function upload($url, $files = [], $form = [], $queries = [])
-    {
+    public function upload($url, $files = [], $form = [], $queries = []) {
         $multipart = [];
 
         foreach ($files as $name => $path) {
@@ -63,15 +57,13 @@ class Http
         return $this->request($url, 'POST', ['query' => $queries, 'multipart' => $multipart]);
     }
 
-    public function setClient(HttpClient $client)
-    {
+    public function setClient(HttpClient $client) {
         $this->client = $client;
 
         return $this;
     }
 
-    public function getClient()
-    {
+    public function getClient() {
         if (!($this->client instanceof HttpClient)) {
             $this->client = new HttpClient();
         }
@@ -79,26 +71,23 @@ class Http
         return $this->client;
     }
 
-    public function addMiddleware(callable $middlewares)
-    {
+    public function addMiddleware(callable $middlewares) {
         array_push($this->middlewares, $middlewares);
 
         return $this;
     }
 
-    public function getMiddlewares()
-    {
+    public function getMiddlewares() {
         return $this->middlewares;
     }
 
-    public function request($url, $method = 'GET', $options = [])
-    {
+    public function request($url, $method = 'GET', $options = []) {
         $method = strtoupper($method);
 
-        $options = array_merge(self::$defaults. $options);
+        $options = array_merge(self::$defaults . $options);
 
         Log::debug('Client Request:', compact('url', 'method', 'options'));
-        
+
         $options['handler'] = $this->getHandler();
 
         $response = $this->getClient()->request($method, $url, $options);
@@ -113,8 +102,7 @@ class Http
         return $response;
     }
 
-    public function parseJSON($body)
-    {
+    public function parseJSON($body) {
         if ($body instanceof ResponseInterface) {
             $body = $body->getBody();
         }
@@ -130,19 +118,17 @@ class Http
         Log::debug('API response decode:', compact('contents'));
 
         if (JSON_ERROR_NONE != json_last_error()) {
-            throw new HttpException('Failed to parse JSON: '.json_last_error_msg());
+            throw new HttpException('Failed to parse JSON: ' . json_last_error_msg());
         }
 
         return $contents;
     }
 
-    public function rightWechatInvalidJSON($invalidJSON)
-    {
+    public function rightWechatInvalidJSON($invalidJSON) {
         return preg_replace("/\p{Cc}/u", '', trim($invalidJSON));
     }
 
-    public function getHandler()
-    {
+    public function getHandler() {
         $stack = HandlerStack::create();
 
         foreach ($this->middlewares as $middleware) {

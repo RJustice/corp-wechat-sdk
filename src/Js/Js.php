@@ -57,9 +57,44 @@ class Js extends AbstractAPI
         $url = $url ? $url : $this->getUrl();
         $nonce = $nonce ? $nonce : Str::quickRandom(10);
         $timestamp = $timestamp ? $timestamp : time();
+        $ticket = $this->ticket();
 
         $sign = [
             'corpId' => $this->getAccessToken()->getCorpId(),
+            'nonceStr' => $nonce,
+            'timestamp' => $timestamp,
+            'url' => $url,
+            'signature' => $this->getSignature($ticket, $nonce, $timestamp, $url),
         ];
+
+        return $sign;
+    }
+
+    public function getSignature($ticket, $nonce, $timestamp, $url) {
+        return sha1("jsapi_ticket={$ticket}&noncestr={$nonce}&timestamp={$timestamp}&url={$url}");
+    }
+
+    public function setUrl($url) {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getUrl() {
+        if ($this->url) {
+            return $this->url;
+        }
+
+        return UrlHelper::current();
+    }
+
+    public function setCache(Cache $cache) {
+        $this->cache = $cache;
+
+        return $this;
+    }
+
+    public function getCache() {
+        return $this->cache ? : $this->cache = new FilesystemCache(sys_get_temp_dir());
     }
 }
