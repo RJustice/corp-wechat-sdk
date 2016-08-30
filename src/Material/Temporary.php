@@ -3,7 +3,7 @@
 namespace RCorpWechat\Material;
 
 use RCorpWechat\Core\AbstractAPI;
-use RCorpWechat\Core\Exception\InvalidArgumentException;
+use RCorpWechat\Core\Exceptions\InvalidArgumentException;
 use RCorpWechat\Support\File;
 
 class Temporary extends AbstractAPI

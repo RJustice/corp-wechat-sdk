@@ -31,7 +31,7 @@ abstract class AbstractMessage extends Attribute
             return $this->$property;
         }
 
-        return $parent::__get($property);
+        return parent::__get($property);
     }
 
     public function __set($property, $value) {

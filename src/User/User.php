@@ -76,15 +76,4 @@ class User extends AbstractAPI
 
         return $this->parseJSON('get', [self::API_SIMPLELIST, $params]);
     }
-
-    public function simplelist($department_id, $fetch_child = 0, $status = 0)
-    {
-        $params = [
-            'department_id' => $department_id,
-            'fetch_child' => $fetch_child,
-            'status' => $status,
-        ];
-
-        return $this->parseJSON('get', [self::API_DETAILLIST, $params]);
-    }
 }

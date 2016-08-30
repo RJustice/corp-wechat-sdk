@@ -106,7 +106,7 @@ class AccessToken
 
     public function getHttp()
     {
-        return $this->http ? : $this->http = new Http();
+        return $this->http ? $this->http : $this->http = new Http();
     }
 
     public function setHttp(Http $http)

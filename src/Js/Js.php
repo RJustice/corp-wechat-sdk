@@ -40,7 +40,7 @@ class Js extends AbstractAPI
     }
 
     public function ticket() {
-        $key = self::TICKET_CACHE_PREFIX . $this->getAccessToken()->getAppId();
+        $key = self::TICKET_CACHE_PREFIX . $this->getAccessToken()->getCorpId();
 
         if ($ticket = $this->getCache()->fetch($key)) {
             return $ticket;
